@@ -171,3 +171,78 @@ news-app/
 ## License
 
 This project is open source and available under the [MIT License](LICENSE).
+
+---
+
+## Deploy to Netlify (Serverless API)
+
+This repo is pre-configured to deploy the React frontend and a serverless API on Netlify.
+
+- Frontend: Create React App in `frontend/`
+- API: Netlify Function at `netlify/functions/news.js`
+- Config: `netlify.toml` (build, publish, functions, redirects)
+
+### One-time setup (Netlify CLI)
+
+1. Install Netlify CLI:
+   ```bash
+   npm install -g netlify-cli
+   ```
+2. Login:
+   ```bash
+   netlify login
+   ```
+
+### Environment variables
+
+Set your NewsAPI key as an environment variable on the Netlify site:
+
+```bash
+netlify env:set NEWS_API_KEY <your_newsapi_key>
+```
+
+Optional (controls frontend login UI only):
+
+```bash
+netlify env:set REACT_APP_REQUIRE_AUTH false
+```
+
+### Build & deploy
+
+From the project root (`news-app/`):
+
+```bash
+# First time: creates and links a new site, builds and deploys a draft
+netlify deploy --build
+
+# Promote to production URL
+netlify deploy --prod
+```
+
+The config in `netlify.toml` will:
+
+- Build CRA using `npm --prefix frontend run build`
+- Publish `frontend/build`
+- Bundle functions from `netlify/functions`
+- Redirect `/api/*` to the `news` function
+- Provide SPA fallback for client-side routes
+
+### Verify
+
+- API JSON:
+  - `https://<your-site>.netlify.app/api/news?country=us&category=general`
+- UI:
+  - `https://<your-site>.netlify.app`
+- If you see empty results, try a different `country`/`category` or verify `NEWS_API_KEY`.
+
+### Notes
+
+- Your API key is kept server-side in the function (not exposed to the browser).
+- To point the frontend at a separate backend instead of Netlify Functions, change the redirect in `netlify.toml`:
+  ```toml
+  [[redirects]]
+    from = "/api/*"
+    to = "https://your-backend-host/api/:splat"
+    status = 200
+    force = true
+  ```
