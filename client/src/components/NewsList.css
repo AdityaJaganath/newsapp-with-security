@@ -1,0 +1,16 @@
+.news-list {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 30px;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .news-list {
+    grid-template-columns: 1fr;
+    padding: 10px;
+  }
+}
